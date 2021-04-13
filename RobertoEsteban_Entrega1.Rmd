@@ -1,0 +1,275 @@
+---
+title: "Entrega 1"
+author: "Roberto Esteban Olivares"
+date: "25/3/2021"
+output: 
+  html_document:
+    toc: yes
+    toc_float: yes
+    toc_depth: 2
+    theme: darkly
+    highlight: tango
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introducción
+
+##### En mi elección para el trabajo a realizar he escogido un dataframe que contiene todas las _estadisticas_ de los jugadores del __videojuego__ FIFA 19.
+
+<center>
+
+![Portada Fifa](https://i.blogs.es/724049/2560_3000/840_560.jpg){width=800 height=400 }.
+</center>
+# Carga del Dataframe y Uso
+
+#### Implementamos e instalamos la libreria _tydiverse_ y después asignamos nuestro csv a la variable fichajes para poder utilizarlo a continuación.
+
+```{r}
+library(tidyverse)
+fifa <- read_csv("data.csv")
+```
+
+#### A continuación seleccionamos _submuestras_ de nuestro archivo para poder trabajar con ellas más tarde
+```{r}
+head(fifa)
+```
+
+
+#### Una submuetra con la que vamos a trabajar va a ser con los __nombres__, __edades__ y __potencial__ de los jugadores
+```{r}
+# Podemos seleccionar las columnas que escojamos de un dataset
+info<-select(fifa, Name,Age,Potential)
+info
+```
+
+#### Otra _submuetra_ con la que vamos a trabajar va a ser el __nombre__ de los __jugadores__, __club__ y su __altura__
+
+```{r}
+info_height<-select(fifa,Name,Club,Height)
+info_height
+```
+
+#### Usando la funcion _arrange_ vamos a ordenar datos
+```{r}
+# Ordenamos los jugadores segun su altura en sentido ascendente
+arrange(fifa, Height)
+```
+
+#### Usando la opción _desc()_, volveremos a ordenar los jugadores esta vez en sentido __descendente__.
+```{r}
+# Podemos usar desc() para tener orden descendente
+arrange(fifa, desc(Height))
+```
+
+# Analisis de Variables numericas
+
+<center>
+
+![Analisis](https://static.letsrebold.com/wp-content/uploads/2019/04/data-analisis.jpg){width=500 height=300 }.
+</center>
+
+#### A continuación vamos a sacar el _maximo_ sobre el que tenemos más valores en nuestro csv, de la columna _edad_. Por lo tanto tendremos la edad del jugador más longevo
+```{r}
+max(fifa$Age)
+```
+####  A continuación vamos a sacar el _minimo_ sobre uno de los valores de nuestro csv, de la columna _edad_. Por lo tanto tendremos la edad del jugador más joven. Utilizaré la funcióin __min()__
+```{r}
+min(fifa$Age)
+```
+#### Tambien podemos sacar la _mediana_ de los potenciales de todos los jugadores, utilizando la función __median()__.
+```{r}
+median(fifa$Potential)
+```
+#### También utilizaré la función __mean()__. La media de los potenciales totales son:
+```{r}
+mean(fifa$Potential)
+```
+
+#### También tenemos la función _summary_ la cual nos permite tener todos los datos necesarios de una variable, vamos a ver alguno ejemplo con ella.
+
+#### Primero lo vemos con la __edad__.
+```{r}
+summary(fifa$Age)
+```
+#### Ahora vamos a verlo con el __dribling__ de los jugadores
+```{r}
+summary(fifa$Dribbling)
+```
+
+# Realización de gráficos de variables y boxplots
+
+<center>
+
+![Graficos](https://cdn2.excelyvba.com/wp-content/uploads/2013/01/gr%C3%A1ficos-combinados-en-excel.jpg){width=500 height=300 }.
+</center>
+
+#### Voy a realizar un _boxplot_ de las estadisticas de los __penaltis__ de cada jugador
+```{r}
+penalty<-fifa$Penalties
+boxplot(penalty)
+```
+
+
+#### Vemos que dicho boxplot esta muy centrado, y también podemos observar que tiene algunso valores atipicos por encima de las patas del mismo. 
+
+#### Para variables __cuantitativas__ podemos recurrir a los histogramas, que nos agrupan los datos en barras para su representación:
+
+```{r}
+hist(penalty)
+```
+
+#### El histograma anteriormente realizado nos puesta los datos sobre las estadisticas que tiene cada jugador para lanzar penaltis en el juego, y vemos que la mayoria de ellos están en un rango de 70-40 de acierto.
+
+#### Podemos comentar que es un poco simetrico el histograma aunque tienede a tner un poco de Asimetría negativa
+
+#### Otro _histograma_ sobre las edades sería
+```{r}
+Edades<-(fifa$Age)
+hist(Edades)
+```
+
+##### En el histograma anteriormente realizado podemos objervar que en el juego abundan jugadores con edades entre 20 y 27 años aproximadamente.
+
+##### Podemos comentar que este histograma tiene Asimetría positiva, ya que la cola de la distribucion se alarga para valores superiores a la media.
+
+
+##### También vemos que tenemos la opción de crear un _diagrama de barras_ y así poder ver como ser reparten los jugadores según si son __diestros__ o __zurdos__. En nuestro diagrama vemos que hay más jugadores diestros que zurdos.
+
+```{r}
+barplot(table(fifa$`Preferred Foot`))
+```
+
+#### También voy a añadir un _diagrama de sectores_ sobre las __edades__ , y así ver sobre que edad tenemos mas jugadores
+```{r}
+frecuencias<-table(fifa$Age)
+pie(frecuencias)
+```
+
+##### Podemos observar que de las edades 20 a la 27 tienen una forma muy similar por lo tanto podemos ver que el porcentaje es muy similar en cada una de las edades.
+
+#### Y también voy a realizar un _diagrama de barras_ sobre las frecuencias de acierto de cada jugador para los __penaltis__.
+```{r}
+barplot(prop.table(table(fifa$Penalties)),col =c("orange"))
+```
+
+##### Con el anterior diagrama de barras podemos observar que las frecuencias mas habituales para lanzar penaltis y marcarlos en el fifa esta entre un 40 y un 70 las stats.
+
+##### Podemos comentar también que es simétrico el diagrama de barras anteriormente representado
+
+# Analizar relaciones entre variables
+
+```{r}
+library(ggplot2)
+ggplot(data = fifa) + 
+  geom_point(mapping = aes(x =Edades , y = Potential))
+
+```
+
+##### En ese primer ejemplo de gráficos con ggplot2, he comparado las edades contra los potenciales de cada jugador , podemos observar que también tiene algunos valores atípcios a la derecha del gráfico representado
+
+
+```{r}
+ggplot(data = fifa) + 
+  geom_point(mapping = aes(y = Potential, x =`Weak Foot`,color=Age))
+```
+
+##### En este gráfico anterior podemos ver en las 5 categorias que tenemos de stats de pierna mala de los jugadores, y en cada una ver los potenciales totales de los jugadores, y asi ver lo que predomina. También he añadido el color para las edades de los jugadores, el cual vemos que los jugadores con menor edad tienen más categoría de pierna mala.
+
+```{r}
+ggplot(data = fifa) + 
+  geom_point(mapping = aes(x = Edades, y = Potential), color = "red", size=1.8, shape=5)
+```
+
+
+##### Como vemos también tenemos algunas opciones en dichos gráficos que nos permiten añadir formas y colores a los diferentes puntos.
+
+```{r}
+ggplot(data = fifa) + 
+  geom_smooth(mapping = aes(x = Age, y = Potential))
+```
+
+#### Con el uso del _geom_smooth()_, podemos ver con más claridad que cuanto menos edad tienen los jugadores más potencial tienen.Por eso la linea va en constante bajada
+
+#### Podemos combinar los dos anteriores vistos
+```{r}
+ggplot(data = fifa) + 
+  geom_point(mapping = aes(x = Edades, y = Potential)) +
+  geom_smooth(mapping = aes(x = Edades, y = Potential))
+```
+
+#### Tenemos también la posibilidad de crear _histogramas_, añadirlos __colores__ 
+
+```{r}
+ggplot(data = fifa) +
+  geom_histogram(mapping = aes(x = Dribbling), color="green", binwidth = 0.50)
+```
+
+##### Observamos que la mayoria de los jugadores tienen un Dribbling de 65-70. También podemos observar con el histograma anterior que tiene asimetria negativa, ya que la cola se arga para valores inferiores a la media
+
+#### Uso de Coordenadas:
+
+#### Los gráficos admiten cambios de coordenadas, para cambiar un gráfico de vertical a horizontal, o cambiar a coordenadas polares y hacerlo circular, con las opciones _coord_flip() y coord_polar()_, respectivamente.
+
+```{r}
+bar <- ggplot(data = fifa) + 
+  geom_bar(
+    mapping = aes(x = fifa$Dribbling, fill = Age), 
+    show.legend = FALSE,
+    width = 1
+  ) + 
+  theme(aspect.ratio = 1) +
+  labs(x = NULL, y = NULL)
+
+bar + coord_flip()
+```
+
+```{r}
+# O a un diagram circular
+bar + coord_polar()
+```
+
+#### A continuación voy a utilizar la función _mutate()_. Y asi también poder serparar una columna en tres categorias para poder representarla luego.
+
+#### Con la función _mutate()_ podemos computar tranformaciones de variables en un data frame.
+
+#### Lo que he hecho es sobreescribir mi dataframe _fifa_ para que tengas la nueva columna que acabamos de realizar.
+
+```{r}
+fifa<-fifa%>%
+  mutate(drib_categorico = case_when(Dribbling < 50 ~ "bajo",
+                                          Dribbling >= 50 & Dribbling < 80 
+                                     ~"medio",TRUE ~ "alto"))
+
+
+
+```
+
+####  A continuación voy a volver a utilizar la función _mutate()_. Y asi también poder serparar una columna en tres categorias para poder representarla luego.
+
+#### Con la función _mutate()_ podemos computar tranformaciones de variables en un data frame.
+
+#### Lo que he hecho también es sobreescribir mi dataframe _fifa_ para que tengas la nueva columna que acabamos de realizar, como habiamos realizado anteriormente.
+```{r}
+fifa<-fifa%>%
+  mutate(clasificacion_edad = case_when(Age < 21 ~ "Joven",
+                                          Age >= 21 & Age < 35 
+                                     ~"Perfecta",TRUE ~ "Retirada")
+)
+```
+
+#### Entonces ahora podemos realizar los graficos de las nuevas columnas y asi poder visualizarlo mejor.
+
+```{r}
+barplot(table(fifa$drib_categorico))
+```
+
+##### Podemos ver que hay más jugadores con un dribling medio, sin embargo tenemos pocos jugadores con dribling altos.
+
+```{r}
+barplot(table(fifa$clasificacion_edad))
+```
+
+##### Según nuestra clasificación que realizamos de la edad, hya mayoria de jugadores en la edad perfecta, y jugadores con edad a punto de retirarse hay pocos jugadores.
